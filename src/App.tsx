@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { GoogleGenAI, Type } from "@google/genai";
 import { 
   Heart,
   School,
@@ -21,28 +22,26 @@ import {
   Quote,
   User,
   CheckCircle,
-  Clock
+  Clock,
+  Gamepad2,
+  Palmtree,
+  Ticket,
+  Waves,
+  Home,
+  Plane,
+  Moon,
+  Bot,
+  Send,
+  Loader2,
+  Sparkle
 } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
-import ReactMarkdown from 'react-markdown';
 import { cn } from './lib/utils';
 
-// --- Types ---
-
-interface Booking {
-  id: string;
-  name: string;
-  phone: string;
-  email: string;
-  eventDate: string;
-  eventType: string;
-  status: 'Pending' | 'Confirmed';
-  createdAt: string;
-}
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // --- Components ---
 
-const Navbar = ({ onBookClick, onAboutClick, onHomeClick }: { onBookClick: () => void, onAboutClick: () => void, onHomeClick: () => void }) => {
+const Navbar = ({ onBookClick, onAboutClick, onHomeClick, onGenZClick }: { onBookClick: () => void, onAboutClick: () => void, onHomeClick: () => void, onGenZClick: () => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -54,8 +53,9 @@ const Navbar = ({ onBookClick, onAboutClick, onHomeClick }: { onBookClick: () =>
 
   const navLinks = [
     { name: 'About Us', onClick: onAboutClick },
-    { name: 'Services', href: '#services' },
+    { name: 'Gen-Z', onClick: onGenZClick },
     { name: 'AI Planner', href: '#ai-planner' },
+    { name: 'Services', href: '#services' },
     { name: 'Testimonials', href: '#testimonials' },
   ];
 
@@ -276,22 +276,28 @@ const Services = () => {
       image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800"
     },
     {
-      title: "Engagement",
-      description: "Celebrate your promise with an elegant and intimate ceremony designed for your love story.",
-      icon: <Heart className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=800"
+      title: "Pool Party",
+      description: "Sun, music, and refreshing vibes with custom floaties and poolside mocktails.",
+      icon: <Waves className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?auto=format&fit=crop&q=80&w=800"
     },
     {
-      title: "College & School Fests",
-      description: "Vibrant cultural fests, sports meets, and annual days managed with youthful energy.",
-      icon: <School className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&q=80&w=800"
+      title: "Movie Night",
+      description: "Private screenings with gourmet popcorn, cozy seating, and premium sound systems.",
+      icon: <Ticket className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800"
     },
     {
-      title: "Festival Functions",
-      description: "From Diwali galas to Holi bashes, we bring traditional festivities to life with authentic decor.",
-      icon: <Music className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=800"
+      title: "Gaming Zone",
+      description: "High-stakes e-sports setups with professional equipment and live streaming.",
+      icon: <Gamepad2 className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Night Out",
+      description: "Experience the ultimate nightlife with curated clubbing, late-night dining, and VIP experiences.",
+      icon: <Moon className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1514525253361-bee8718a300a?auto=format&fit=crop&q=80&w=800"
     }
   ];
 
@@ -334,79 +340,6 @@ const Services = () => {
             </motion.div>
           ))}
         </div>
-      </div>
-    </section>
-  );
-};
-
-const GeminiPlanner = () => {
-  const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const generatePlan = async () => {
-    if (!prompt) return;
-    setIsLoading(true);
-    try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const model = "gemini-3-flash-preview";
-      const result = await ai.models.generateContent({
-        model,
-        contents: `You are a world-class event planner. Create a detailed, creative, and elegant event plan for: ${prompt}. Include theme ideas, decor suggestions, a sample timeline, and unique touches. Format with clear headings and bullet points.`,
-      });
-      setResponse(result.text || "Sorry, I couldn't generate a plan right now.");
-    } catch (error) {
-      console.error(error);
-      setResponse("An error occurred while generating your plan. Please check your API key.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <section id="ai-planner" className="py-24 px-6 bg-white overflow-hidden relative">
-      {/* Decorative Background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] aspect-square bg-teal-50 rounded-full blur-[120px] -z-10 opacity-50" />
-
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold uppercase tracking-widest mb-6">
-          <Sparkles className="w-3 h-3" />
-          AI-Powered Planning
-        </div>
-        <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-6">Gemini Event Planner</h2>
-        <p className="text-slate-600 mb-12 text-lg">Tell us your event idea, and our AI will draft a professional plan in seconds.</p>
-
-        <div className="bg-white p-4 rounded-[2.5rem] shadow-2xl border border-slate-100 flex flex-col md:flex-row gap-4 mb-12">
-          <input 
-            type="text" 
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g., A sustainable garden wedding for 50 people..." 
-            className="flex-1 px-8 py-4 bg-slate-50 rounded-full outline-none focus:ring-2 focus:ring-teal-500/20 transition-all text-slate-900"
-          />
-          <button 
-            onClick={generatePlan}
-            disabled={isLoading}
-            className="bg-teal-600 text-white px-10 py-4 rounded-full font-bold hover:bg-teal-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-w-[180px]"
-          >
-            {isLoading ? "Thinking..." : "Generate Plan"}
-            {!isLoading && <Sparkles className="w-5 h-5" />}
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {response && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-slate-50 p-8 md:p-12 rounded-[2.5rem] text-left shadow-inner border border-slate-100 max-h-[600px] overflow-y-auto custom-scrollbar"
-            >
-              <div className="prose prose-slate max-w-none prose-headings:font-serif prose-headings:text-slate-900 prose-p:text-slate-600 prose-li:text-slate-600">
-                <ReactMarkdown>{response}</ReactMarkdown>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </section>
   );
@@ -519,7 +452,7 @@ const Testimonials = () => {
   );
 };
 
-const BookingPage = ({ onCancel, onSubmit }: { onCancel: () => void, onSubmit: (b: Booking) => void }) => {
+const BookingPage = ({ onCancel, onSubmit }: { onCancel: () => void, onSubmit: () => void }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -530,13 +463,22 @@ const BookingPage = ({ onCancel, onSubmit }: { onCancel: () => void, onSubmit: (
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newBooking: Booking = {
-      id: Math.random().toString(36).substr(2, 9),
-      ...formData,
-      status: 'Confirmed',
-      createdAt: new Date().toLocaleString()
-    };
-    onSubmit(newBooking);
+    
+    const message = `Hello EventSathi! I would like to book an event.%0A%0A` +
+      `*Booking Details:*%0A` +
+      `• *Name:* ${formData.name}%0A` +
+      `• *Phone:* ${formData.phone}%0A` +
+      `• *Email:* ${formData.email}%0A` +
+      `• *Date:* ${formData.eventDate}%0A` +
+      `• *Event Type:* ${formData.eventType}%0A%0A` +
+      `Looking forward to hearing from you!`;
+
+    const whatsappUrl = `https://wa.me/919720507177?text=${message}`;
+    
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
+    
+    onSubmit();
   };
 
   return (
@@ -625,8 +567,12 @@ const BookingPage = ({ onCancel, onSubmit }: { onCancel: () => void, onSubmit: (
                   <option>Wedding</option>
                   <option>Corporate Event</option>
                   <option>Private Party</option>
-                  <option>Engagement</option>
-                  <option>College Fest</option>
+                  <option>Pool Party</option>
+                  <option>Gaming Zone</option>
+                  <option>Movie Night</option>
+                  <option>Short Trip</option>
+                  <option>Home Party</option>
+                  <option>Beach Party</option>
                   <option>Other</option>
                 </select>
               </div>
@@ -651,72 +597,6 @@ const BookingPage = ({ onCancel, onSubmit }: { onCancel: () => void, onSubmit: (
         </motion.div>
       </div>
     </div>
-  );
-};
-
-const BookingSection = ({ bookings }: { bookings: Booking[] }) => {
-  if (bookings.length === 0) return null;
-
-  return (
-    <section id="bookings" className="py-24 px-6 bg-slate-50 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-serif font-bold text-slate-900 mb-4">Your Bookings</h2>
-          <p className="text-slate-600">Track the status of your upcoming celebrations.</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {bookings.map((booking) => (
-            <motion.div 
-              key={booking.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100 relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-teal-50 rounded-bl-[4rem] -z-10" />
-              
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center text-teal-600">
-                  <Calendar className="w-6 h-6" />
-                </div>
-                <div className={cn(
-                  "px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2",
-                  booking.status === 'Pending' ? "bg-gold-50 text-gold-600" : "bg-teal-50 text-teal-600"
-                )}>
-                  {booking.status === 'Pending' ? <Clock className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
-                  {booking.status}
-                </div>
-              </div>
-
-              <h3 className="text-xl font-serif font-bold text-slate-900 mb-2">{booking.eventType}</h3>
-              <div className="text-sm text-slate-500 mb-6 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {booking.eventDate}
-              </div>
-
-              <div className="space-y-3 pt-6 border-t border-slate-50">
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <User className="w-4 h-4 text-teal-600" />
-                  {booking.name}
-                </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <Phone className="w-4 h-4 text-teal-600" />
-                  {booking.phone}
-                </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
-                  <Mail className="w-4 h-4 text-teal-600" />
-                  {booking.email}
-                </div>
-              </div>
-
-              <div className="mt-6 text-[10px] text-slate-400 font-medium uppercase tracking-widest">
-                Booking ID: {booking.id}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 };
 
@@ -875,7 +755,306 @@ const AboutUs = () => {
   );
 };
 
-const Footer = ({ onAboutClick, onHomeClick }: { onAboutClick: () => void, onHomeClick: () => void }) => {
+const GenZSection = () => {
+  const genZServices = [
+    {
+      title: "Movie Night",
+      description: "Private screenings with gourmet popcorn, cozy seating, and premium sound systems.",
+      icon: <Ticket className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Pool Party",
+      description: "Sun, music, and refreshing vibes with custom floaties and poolside mocktails.",
+      icon: <Waves className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Short Trip",
+      description: "Curated weekend getaways and road trips to the most Instagrammable spots.",
+      icon: <Plane className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Home Party",
+      description: "Intimate house gatherings with professional decor, catering, and entertainment.",
+      icon: <Home className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Beach Party",
+      description: "Bonfires, music, and the ocean breeze for an unforgettable coastal celebration.",
+      icon: <Palmtree className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Gaming Zone",
+      description: "High-stakes e-sports setups with professional equipment and live streaming.",
+      icon: <Gamepad2 className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
+    }
+  ];
+
+  return (
+    <div className="pt-20 bg-slate-50 min-h-screen">
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-600 text-white text-sm font-bold uppercase tracking-widest mb-6 shadow-lg shadow-teal-600/20"
+            >
+              <Sparkles className="w-4 h-4" />
+              Gen-Z Edition
+            </motion.div>
+            <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-6">The Gen-Z Vibe</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto text-lg">Curated experiences for the next generation. Aesthetic, energetic, and absolutely unforgettable.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {genZServices.map((service, idx) => (
+              <motion.div 
+                key={service.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="group relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 transition-all hover:shadow-2xl"
+              >
+                <div className="aspect-square overflow-hidden">
+                  <img 
+                    src={service.image} 
+                    alt={service.title} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </div>
+                <div className="p-8 relative">
+                  <div className="w-14 h-14 bg-teal-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-teal-600/20 -mt-16 relative z-10 border-4 border-white">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-2xl font-serif font-bold text-slate-900 mb-3">{service.title}</h3>
+                  <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const AIPlanner = () => {
+  const [prompt, setPrompt] = useState('');
+  const [plan, setPlan] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const generatePlan = async () => {
+    if (!prompt.trim()) return;
+    setIsLoading(true);
+    setPlan(null); // Reset plan for new animation
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: `You are an expert event architect. Plan a highly creative and detailed event based on this request: "${prompt}". 
+        Provide a unique title, a cohesive theme, a minute-by-minute itinerary, a comprehensive checklist, and a vivid description of the "vibe".`,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              theme: { type: Type.STRING },
+              itinerary: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    time: { type: Type.STRING },
+                    activity: { type: Type.STRING }
+                  }
+                }
+              },
+              checklist: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              vibeDescription: { type: Type.STRING }
+            },
+            required: ["title", "theme", "itinerary", "checklist", "vibeDescription"]
+          }
+        }
+      });
+
+      const result = JSON.parse(response.text || '{}');
+      setPlan(result);
+    } catch (error) {
+      console.error("AI Planning Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  return (
+    <section className="py-32 px-6 bg-[#0a0502] text-white overflow-hidden relative">
+      {/* Atmospheric Background - Recipe 7 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-teal-900/30 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-900/20 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-amber-900/10 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="max-w-5xl mx-auto relative z-10">
+        <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-teal-400 text-xs font-bold tracking-[0.2em] uppercase mb-8"
+          >
+            <Sparkles className="w-4 h-4" />
+            The AI Architect
+          </motion.div>
+          <h2 className="text-5xl md:text-8xl font-serif font-bold mb-8 tracking-tight leading-[0.9]">
+            Dream It. <br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-400">AI Plans It.</span>
+          </h2>
+          <p className="text-slate-400 text-xl max-w-2xl mx-auto font-light leading-relaxed">
+            Describe your vision, and our AI will architect a bespoke celebration experience just for you.
+          </p>
+        </div>
+
+        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-2 rounded-[3rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-20 group focus-within:border-teal-500/50 transition-all duration-500">
+          <div className="flex flex-col md:flex-row gap-2">
+            <input 
+              type="text"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="e.g. A futuristic masquerade ball for 100 people..."
+              className="flex-1 bg-transparent px-10 py-8 outline-none text-xl placeholder:text-slate-600 font-light"
+              onKeyPress={(e) => e.key === 'Enter' && generatePlan()}
+            />
+            <button 
+              onClick={generatePlan}
+              disabled={isLoading}
+              className="bg-white text-black hover:bg-teal-400 hover:text-white px-12 py-8 rounded-[2.5rem] font-bold transition-all duration-500 flex items-center justify-center gap-3 disabled:opacity-50 group-hover:scale-[0.98]"
+            >
+              {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Bot className="w-6 h-6" />}
+              {isLoading ? 'Architecting...' : 'Generate Plan'}
+            </button>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {plan && (
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="grid lg:grid-cols-12 gap-8"
+            >
+              {/* Left Column: Vibe & Checklist */}
+              <div className="lg:col-span-7 space-y-8">
+                <motion.div 
+                  variants={itemVariants}
+                  className="bg-white/[0.03] backdrop-blur-md p-10 rounded-[3rem] border border-white/10 hover:border-teal-500/30 transition-colors duration-500"
+                >
+                  <div className="flex items-center gap-3 text-teal-400 mb-6">
+                    <Sparkle className="w-5 h-5" />
+                    <span className="font-bold uppercase tracking-[0.3em] text-[10px]">The Concept</span>
+                  </div>
+                  <h3 className="text-4xl font-serif font-bold mb-6 leading-tight">{plan.title}</h3>
+                  <p className="text-slate-400 text-lg leading-relaxed font-light italic">"{plan.vibeDescription}"</p>
+                  
+                  <div className="mt-10 flex flex-wrap gap-4">
+                    <div className="px-6 py-3 bg-white/5 rounded-full border border-white/10 text-sm font-medium">
+                      <span className="text-slate-500 mr-2">Theme:</span> {plan.theme}
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  variants={itemVariants}
+                  className="bg-white/[0.03] backdrop-blur-md p-10 rounded-[3rem] border border-white/10"
+                >
+                  <div className="flex items-center gap-3 text-purple-400 mb-8">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="font-bold uppercase tracking-[0.3em] text-[10px]">Preparation Checklist</span>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {plan.checklist.map((item: string, i: number) => (
+                      <motion.div 
+                        key={i} 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex items-center gap-4 group cursor-default"
+                      >
+                        <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center group-hover:border-teal-500/50 transition-colors">
+                          <div className="w-2 h-2 rounded-full bg-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <span className="text-slate-300 text-sm font-light group-hover:text-white transition-colors">{item}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Right Column: Itinerary */}
+              <motion.div 
+                variants={itemVariants}
+                className="lg:col-span-5 bg-white/[0.03] backdrop-blur-md p-10 rounded-[3rem] border border-white/10"
+              >
+                <div className="flex items-center gap-3 text-amber-400 mb-10">
+                  <Clock className="w-5 h-5" />
+                  <span className="font-bold uppercase tracking-[0.3em] text-[10px]">Event Timeline</span>
+                </div>
+                <div className="space-y-10 relative">
+                  <div className="absolute left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-teal-500/50 via-purple-500/50 to-transparent" />
+                  {plan.itinerary.map((item: any, i: number) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="relative pl-12 group"
+                    >
+                      <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-[#0a0502] border-2 border-white/20 group-hover:border-teal-500 transition-colors z-10 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:bg-teal-500 transition-colors" />
+                      </div>
+                      <div className="text-teal-400 font-bold text-xs tracking-widest mb-2">{item.time}</div>
+                      <div className="text-white text-lg font-light leading-snug group-hover:translate-x-1 transition-transform">{item.activity}</div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+};
+
+const Footer = ({ onAboutClick, onHomeClick, onGenZClick }: { onAboutClick: () => void, onHomeClick: () => void, onGenZClick: () => void }) => {
   return (
     <footer className="bg-white pt-24 pb-12 px-6 border-t border-slate-100">
       <div className="max-w-7xl mx-auto">
@@ -908,8 +1087,8 @@ const Footer = ({ onAboutClick, onHomeClick }: { onAboutClick: () => void, onHom
             <h4 className="font-bold text-slate-900 mb-6">Quick Links</h4>
             <ul className="space-y-4">
               <li><button onClick={onAboutClick} className="text-slate-500 hover:text-teal-600 transition-colors">About Us</button></li>
+              <li><button onClick={onGenZClick} className="text-slate-500 hover:text-teal-600 transition-colors">Gen-Z Vibe</button></li>
               <li><a href="#services" className="text-slate-500 hover:text-teal-600 transition-colors">Services</a></li>
-              <li><a href="#ai-planner" className="text-slate-500 hover:text-teal-600 transition-colors">AI Planner</a></li>
               <li><a href="#testimonials" className="text-slate-500 hover:text-teal-600 transition-colors">Testimonials</a></li>
             </ul>
           </div>
@@ -920,7 +1099,7 @@ const Footer = ({ onAboutClick, onHomeClick }: { onAboutClick: () => void, onHom
               <li><a href="#" className="text-slate-500 hover:text-teal-600 transition-colors">Wedding Planning</a></li>
               <li><a href="#" className="text-slate-500 hover:text-teal-600 transition-colors">Corporate Events</a></li>
               <li><a href="#" className="text-slate-500 hover:text-teal-600 transition-colors">Private Parties</a></li>
-              <li><a href="#" className="text-slate-500 hover:text-teal-600 transition-colors">Destination Events</a></li>
+              <li><button onClick={onGenZClick} className="text-slate-500 hover:text-teal-600 transition-colors">Gen-Z Vibes</button></li>
             </ul>
           </div>
 
@@ -950,8 +1129,7 @@ const Footer = ({ onAboutClick, onHomeClick }: { onAboutClick: () => void, onHom
 // --- Main App ---
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'about'>('home');
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'about' | 'gen-z'>('home');
 
   const handleHomeClick = () => {
     setCurrentPage('home');
@@ -960,6 +1138,11 @@ export default function App() {
 
   const handleAboutClick = () => {
     setCurrentPage('about');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleGenZClick = () => {
+    setCurrentPage('gen-z');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -974,17 +1157,14 @@ export default function App() {
         onBookClick={handleBookClick} 
         onAboutClick={handleAboutClick}
         onHomeClick={handleHomeClick}
+        onGenZClick={handleGenZClick}
       />
       
       {currentPage === 'booking' && (
         <BookingPage 
           onCancel={() => setCurrentPage('home')} 
-          onSubmit={(newBooking) => {
-            setBookings([newBooking, ...bookings]);
+          onSubmit={() => {
             setCurrentPage('home');
-            setTimeout(() => {
-              document.getElementById('bookings')?.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
           }} 
         />
       )}
@@ -993,19 +1173,25 @@ export default function App() {
         <AboutUs />
       )}
 
+      {currentPage === 'gen-z' && (
+        <GenZSection />
+      )}
+
       {currentPage === 'home' && (
         <>
           <Hero onBookClick={handleBookClick} />
+          <div id="ai-planner">
+            <AIPlanner />
+          </div>
           <Services />
-          <GeminiPlanner />
           <Testimonials />
-          <BookingSection bookings={bookings} />
         </>
       )}
 
       <Footer 
         onAboutClick={handleAboutClick}
         onHomeClick={handleHomeClick}
+        onGenZClick={handleGenZClick}
       />
     </div>
   );
