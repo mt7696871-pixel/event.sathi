@@ -37,7 +37,18 @@ import {
 } from 'lucide-react';
 import { cn } from './lib/utils';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is not defined');
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+};
 
 // --- Components ---
 
@@ -860,6 +871,7 @@ const AIPlanner = () => {
     setPlan(null);
     
     try {
+      const ai = getAI();
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: `You are an expert event architect. Plan a highly creative and detailed event based on this request: "${prompt}". 
