@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
-import { GoogleGenAI, Type } from "@google/genai";
+
 import { 
   Heart,
   School,
@@ -29,26 +29,9 @@ import {
   Waves,
   Home,
   Plane,
-  Moon,
-  Bot,
-  Send,
-  Loader2,
-  Sparkle
+  Moon
 } from 'lucide-react';
 import { cn } from './lib/utils';
-
-let aiInstance: GoogleGenAI | null = null;
-
-const getAI = () => {
-  if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not defined');
-    }
-    aiInstance = new GoogleGenAI({ apiKey });
-  }
-  return aiInstance;
-};
 
 // --- Components ---
 
@@ -65,7 +48,6 @@ const Navbar = ({ onBookClick, onAboutClick, onHomeClick, onGenZClick }: { onBoo
   const navLinks = [
     { name: 'About Us', onClick: onAboutClick },
     { name: 'Gen-Z', onClick: onGenZClick },
-    { name: 'AI Planner', href: '#ai-planner' },
     { name: 'Services', href: '#services' },
     { name: 'Testimonials', href: '#testimonials' },
   ];
@@ -858,238 +840,6 @@ const GenZSection = () => {
   );
 };
 
-const AIPlanner = () => {
-  const [prompt, setPrompt] = useState('');
-  const [plan, setPlan] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const generatePlan = async () => {
-    if (!prompt.trim()) return;
-    setIsLoading(true);
-    setError(null);
-    setPlan(null);
-    
-    try {
-      const ai = getAI();
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: `You are an expert event architect. Plan a highly creative and detailed event based on this request: "${prompt}". 
-        Provide a unique title, a cohesive theme, a minute-by-minute itinerary, a comprehensive checklist, and a vivid description of the "vibe".`,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              title: { type: Type.STRING },
-              theme: { type: Type.STRING },
-              itinerary: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    time: { type: Type.STRING },
-                    activity: { type: Type.STRING }
-                  }
-                }
-              },
-              checklist: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING }
-              },
-              vibeDescription: { type: Type.STRING }
-            },
-            required: ["title", "theme", "itinerary", "checklist", "vibeDescription"]
-          }
-        }
-      });
-
-      const result = JSON.parse(response.text || '{}');
-      setPlan(result);
-    } catch (err: any) {
-      console.error("AI Planning Error:", err);
-      setError("Architectural error: Please ensure your API key is correctly set in the Settings menu.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
-
-  return (
-    <section className="py-32 px-6 bg-[#0a0502] text-white overflow-hidden relative">
-      {/* Atmospheric Background - Recipe 7 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-teal-900/30 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-purple-900/20 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-amber-900/10 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="max-w-5xl mx-auto relative z-10">
-        <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-teal-400 text-xs font-bold tracking-[0.2em] uppercase mb-8"
-          >
-            <Sparkles className="w-4 h-4" />
-            The AI Architect
-          </motion.div>
-          <h2 className="text-5xl md:text-8xl font-serif font-bold mb-8 tracking-tight leading-[0.9]">
-            Dream It. <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-purple-400">AI Plans It.</span>
-          </h2>
-          <p className="text-slate-400 text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            Describe your vision, and our AI will architect a bespoke celebration experience just for you.
-          </p>
-        </div>
-
-        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-2 rounded-[3rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-8 group focus-within:border-teal-500/50 transition-all duration-500">
-          <div className="flex flex-col md:flex-row gap-2">
-            <div className="flex-1 relative flex items-center">
-              <input 
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g. A futuristic masquerade ball for 100 people..."
-                className="w-full bg-transparent px-10 py-8 outline-none text-xl placeholder:text-slate-600 font-light pr-16"
-                onKeyPress={(e) => e.key === 'Enter' && generatePlan()}
-              />
-              {prompt && (
-                <button 
-                  onClick={() => setPrompt('')}
-                  className="absolute right-6 text-slate-500 hover:text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              )}
-            </div>
-            <button 
-              onClick={generatePlan}
-              disabled={isLoading}
-              className="bg-white text-black hover:bg-teal-400 hover:text-white px-12 py-8 rounded-[2.5rem] font-bold transition-all duration-500 flex items-center justify-center gap-3 disabled:opacity-50 group-hover:scale-[0.98]"
-            >
-              {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Bot className="w-6 h-6" />}
-              {isLoading ? 'Architecting...' : 'Generate Plan'}
-            </button>
-          </div>
-        </div>
-
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-center text-sm"
-          >
-            {error}
-          </motion.div>
-        )}
-
-        <AnimatePresence mode="wait">
-          {plan && (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              className="grid lg:grid-cols-12 gap-8"
-            >
-              {/* Left Column: Vibe & Checklist */}
-              <div className="lg:col-span-7 space-y-8">
-                <motion.div 
-                  variants={itemVariants}
-                  className="bg-white/[0.03] backdrop-blur-md p-10 rounded-[3rem] border border-white/10 hover:border-teal-500/30 transition-colors duration-500"
-                >
-                  <div className="flex items-center gap-3 text-teal-400 mb-6">
-                    <Sparkle className="w-5 h-5" />
-                    <span className="font-bold uppercase tracking-[0.3em] text-[10px]">The Concept</span>
-                  </div>
-                  <h3 className="text-4xl font-serif font-bold mb-6 leading-tight">{plan.title}</h3>
-                  <p className="text-slate-400 text-lg leading-relaxed font-light italic">"{plan.vibeDescription}"</p>
-                  
-                  <div className="mt-10 flex flex-wrap gap-4">
-                    <div className="px-6 py-3 bg-white/5 rounded-full border border-white/10 text-sm font-medium">
-                      <span className="text-slate-500 mr-2">Theme:</span> {plan.theme}
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div 
-                  variants={itemVariants}
-                  className="bg-white/[0.03] backdrop-blur-md p-10 rounded-[3rem] border border-white/10"
-                >
-                  <div className="flex items-center gap-3 text-purple-400 mb-8">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-bold uppercase tracking-[0.3em] text-[10px]">Preparation Checklist</span>
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    {plan.checklist.map((item: string, i: number) => (
-                      <motion.div 
-                        key={i} 
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="flex items-center gap-4 group cursor-default"
-                      >
-                        <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center group-hover:border-teal-500/50 transition-colors">
-                          <div className="w-2 h-2 rounded-full bg-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <span className="text-slate-300 text-sm font-light group-hover:text-white transition-colors">{item}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Right Column: Itinerary */}
-              <motion.div 
-                variants={itemVariants}
-                className="lg:col-span-5 bg-white/[0.03] backdrop-blur-md p-10 rounded-[3rem] border border-white/10"
-              >
-                <div className="flex items-center gap-3 text-amber-400 mb-10">
-                  <Clock className="w-5 h-5" />
-                  <span className="font-bold uppercase tracking-[0.3em] text-[10px]">Event Timeline</span>
-                </div>
-                <div className="space-y-10 relative">
-                  <div className="absolute left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-teal-500/50 via-purple-500/50 to-transparent" />
-                  {plan.itinerary.map((item: any, i: number) => (
-                    <motion.div 
-                      key={i}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      className="relative pl-12 group"
-                    >
-                      <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-[#0a0502] border-2 border-white/20 group-hover:border-teal-500 transition-colors z-10 flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-white group-hover:bg-teal-500 transition-colors" />
-                      </div>
-                      <div className="text-teal-400 font-bold text-xs tracking-widest mb-2">{item.time}</div>
-                      <div className="text-white text-lg font-light leading-snug group-hover:translate-x-1 transition-transform">{item.activity}</div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </section>
-  );
-};
-
 const Footer = ({ onAboutClick, onHomeClick, onGenZClick }: { onAboutClick: () => void, onHomeClick: () => void, onGenZClick: () => void }) => {
   return (
     <footer className="bg-white pt-24 pb-12 px-6 border-t border-slate-100">
@@ -1216,9 +966,6 @@ export default function App() {
       {currentPage === 'home' && (
         <>
           <Hero onBookClick={handleBookClick} />
-          <div id="ai-planner">
-            <AIPlanner />
-          </div>
           <Services />
           <Testimonials />
         </>
