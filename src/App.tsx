@@ -851,11 +851,14 @@ const AIPlanner = () => {
   const [prompt, setPrompt] = useState('');
   const [plan, setPlan] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const generatePlan = async () => {
     if (!prompt.trim()) return;
     setIsLoading(true);
-    setPlan(null); // Reset plan for new animation
+    setError(null);
+    setPlan(null);
+    
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
@@ -891,8 +894,9 @@ const AIPlanner = () => {
 
       const result = JSON.parse(response.text || '{}');
       setPlan(result);
-    } catch (error) {
-      console.error("AI Planning Error:", error);
+    } catch (err: any) {
+      console.error("AI Planning Error:", err);
+      setError("Architectural error: Please ensure your API key is correctly set in the Settings menu.");
     } finally {
       setIsLoading(false);
     }
@@ -941,16 +945,26 @@ const AIPlanner = () => {
           </p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-2 rounded-[3rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-20 group focus-within:border-teal-500/50 transition-all duration-500">
+        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-2 rounded-[3rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-8 group focus-within:border-teal-500/50 transition-all duration-500">
           <div className="flex flex-col md:flex-row gap-2">
-            <input 
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="e.g. A futuristic masquerade ball for 100 people..."
-              className="flex-1 bg-transparent px-10 py-8 outline-none text-xl placeholder:text-slate-600 font-light"
-              onKeyPress={(e) => e.key === 'Enter' && generatePlan()}
-            />
+            <div className="flex-1 relative flex items-center">
+              <input 
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="e.g. A futuristic masquerade ball for 100 people..."
+                className="w-full bg-transparent px-10 py-8 outline-none text-xl placeholder:text-slate-600 font-light pr-16"
+                onKeyPress={(e) => e.key === 'Enter' && generatePlan()}
+              />
+              {prompt && (
+                <button 
+                  onClick={() => setPrompt('')}
+                  className="absolute right-6 text-slate-500 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
             <button 
               onClick={generatePlan}
               disabled={isLoading}
@@ -961,6 +975,16 @@ const AIPlanner = () => {
             </button>
           </div>
         </div>
+
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-center text-sm"
+          >
+            {error}
+          </motion.div>
+        )}
 
         <AnimatePresence mode="wait">
           {plan && (
