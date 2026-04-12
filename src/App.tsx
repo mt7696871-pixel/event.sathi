@@ -254,7 +254,7 @@ const Services = () => {
       title: "Weddings",
       description: "From traditional ceremonies to modern destination weddings, we handle every detail.",
       icon: <Calendar className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=800"
+      image: "https://i.ytimg.com/vi/WNRiCBKMbSw/hq720.jpg"
     },
     {
       title: "Corporate Events",
@@ -266,19 +266,19 @@ const Services = () => {
       title: "Private Parties",
       description: "Birthdays, anniversaries, and milestones celebrated with style and joy.",
       icon: <Sparkles className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800"
+      image: "https://images.unsplash.com/photo-1506998785328-81e7bb5003e4?auto=format&fit=crop&q=80&w=800"
     },
     {
       title: "Pool Party",
       description: "Sun, music, and refreshing vibes with custom floaties and poolside mocktails.",
       icon: <Waves className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?auto=format&fit=crop&q=80&w=800"
+      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/99/26/4b/the-original-pool-party.jpg?w=1200&h=-1&s=1"
     },
     {
       title: "Movie Night",
       description: "Private screenings with gourmet popcorn, cozy seating, and premium sound systems.",
       icon: <Ticket className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800"
+      image: "https://png.pngtree.com/png-vector/20250513/ourmid/pngtree-movie-night-essentials-such-as-clapperboard-popcorn-and-tickets-png-image_16245533.png"
     },
     {
       title: "Gaming Zone",
@@ -290,7 +290,7 @@ const Services = () => {
       title: "Night Out",
       description: "Experience the ultimate nightlife with curated clubbing, late-night dining, and VIP experiences.",
       icon: <Moon className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1514525253361-bee8718a300a?auto=format&fit=crop&q=80&w=800"
+      image: "https://media.ur.life/uploads/Night_Out_1440_x_810.jpg"
     }
   ];
 
@@ -326,9 +326,6 @@ const Services = () => {
                 </div>
                 <h3 className="text-2xl font-serif font-bold text-slate-900 mb-3">{service.title}</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-                <a href="#" className="inline-flex items-center gap-2 text-teal-600 font-bold hover:gap-3 transition-all">
-                  Learn More <ChevronRight className="w-4 h-4" />
-                </a>
               </div>
             </motion.div>
           ))}
@@ -754,13 +751,13 @@ const GenZSection = () => {
       title: "Movie Night",
       description: "Private screenings with gourmet popcorn, cozy seating, and premium sound systems.",
       icon: <Ticket className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=800"
+      image: "https://png.pngtree.com/png-vector/20250513/ourmid/pngtree-movie-night-essentials-such-as-clapperboard-popcorn-and-tickets-png-image_16245533.png"
     },
     {
       title: "Pool Party",
       description: "Sun, music, and refreshing vibes with custom floaties and poolside mocktails.",
       icon: <Waves className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?auto=format&fit=crop&q=80&w=800"
+      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/99/26/4b/the-original-pool-party.jpg?w=1200&h=-1&s=1"
     },
     {
       title: "Short Trip",
@@ -785,6 +782,12 @@ const GenZSection = () => {
       description: "High-stakes e-sports setups with professional equipment and live streaming.",
       icon: <Gamepad2 className="w-6 h-6" />,
       image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Night Out",
+      description: "Experience the ultimate nightlife with curated clubbing, late-night dining, and VIP experiences.",
+      icon: <Moon className="w-6 h-6" />,
+      image: "https://media.ur.life/uploads/Night_Out_1440_x_810.jpg"
     }
   ];
 
