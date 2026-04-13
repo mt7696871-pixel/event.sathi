@@ -23,7 +23,7 @@ import {
   User,
   CheckCircle,
   Clock,
-  Gamepad2,
+  Trophy,
   Palmtree,
   Ticket,
   Waves,
@@ -35,7 +35,7 @@ import { cn } from './lib/utils';
 
 // --- Components ---
 
-const Navbar = ({ onBookClick, onAboutClick, onHomeClick, onGenZClick }: { onBookClick: () => void, onAboutClick: () => void, onHomeClick: () => void, onGenZClick: () => void }) => {
+const Navbar = ({ onBookClick, onAboutClick, onHomeClick }: { onBookClick: () => void, onAboutClick: () => void, onHomeClick: () => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -47,7 +47,6 @@ const Navbar = ({ onBookClick, onAboutClick, onHomeClick, onGenZClick }: { onBoo
 
   const navLinks = [
     { name: 'About Us', onClick: onAboutClick },
-    { name: 'Gen-Z', onClick: onGenZClick },
     { name: 'Services', href: '#services' },
     { name: 'Testimonials', href: '#testimonials' },
   ];
@@ -67,24 +66,20 @@ const Navbar = ({ onBookClick, onAboutClick, onHomeClick, onGenZClick }: { onBoo
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
+          <button 
+            onClick={onAboutClick}
+            className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors"
+          >
+            About Us
+          </button>
           {navLinks.map((link) => (
-            link.onClick ? (
-              <button 
-                key={link.name} 
-                onClick={link.onClick}
-                className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors"
-              >
-                {link.name}
-              </button>
-            ) : (
-              <a 
-                key={link.name} 
-                href={link.href} 
-                className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors"
-              >
-                {link.name}
-              </a>
-            )
+            <a 
+              key={link.name} 
+              href={link.href} 
+              className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors"
+            >
+              {link.name}
+            </a>
           ))}
           <button 
             onClick={onBookClick}
@@ -112,25 +107,21 @@ const Navbar = ({ onBookClick, onAboutClick, onHomeClick, onGenZClick }: { onBoo
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-full left-0 right-0 bg-white border-t border-slate-100 p-6 flex flex-col gap-4 md:hidden shadow-xl"
           >
+            <button 
+              onClick={() => { onAboutClick(); setIsMobileMenuOpen(false); }}
+              className="text-lg font-medium text-slate-900 text-left"
+            >
+              About Us
+            </button>
             {navLinks.map((link) => (
-              link.onClick ? (
-                <button 
-                  key={link.name} 
-                  onClick={() => { link.onClick!(); setIsMobileMenuOpen(false); }}
-                  className="text-lg font-medium text-slate-900 text-left"
-                >
-                  {link.name}
-                </button>
-              ) : (
-                <a 
-                  key={link.name} 
-                  href={link.href} 
-                  className="text-lg font-medium text-slate-900"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
-              )
+              <a 
+                key={link.name} 
+                href={link.href} 
+                className="text-lg font-medium text-slate-900"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.name}
+              </a>
             ))}
             <div className="flex items-center gap-4 mt-2">
               <button 
@@ -281,16 +272,28 @@ const Services = () => {
       image: "https://png.pngtree.com/png-vector/20250513/ourmid/pngtree-movie-night-essentials-such-as-clapperboard-popcorn-and-tickets-png-image_16245533.png"
     },
     {
-      title: "Gaming Zone",
-      description: "High-stakes e-sports setups with professional equipment and live streaming.",
-      icon: <Gamepad2 className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
+      title: "Sports Watch",
+      description: "Live sports screenings with stadium-like atmosphere, premium sound, and great company.",
+      icon: <Trophy className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&q=80&w=800"
     },
     {
       title: "Night Out",
       description: "Experience the ultimate nightlife with curated clubbing, late-night dining, and VIP experiences.",
       icon: <Moon className="w-6 h-6" />,
       image: "https://media.ur.life/uploads/Night_Out_1440_x_810.jpg"
+    },
+    {
+      title: "Short Trip",
+      description: "Curated weekend getaways and road trips to the most Instagrammable spots.",
+      icon: <Plane className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      title: "Home Party",
+      description: "Intimate house gatherings with professional decor, catering, and entertainment.",
+      icon: <Home className="w-6 h-6" />,
+      image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800"
     }
   ];
 
@@ -558,11 +561,10 @@ const BookingPage = ({ onCancel, onSubmit }: { onCancel: () => void, onSubmit: (
                   <option>Corporate Event</option>
                   <option>Private Party</option>
                   <option>Pool Party</option>
-                  <option>Gaming Zone</option>
+                  <option>Sports Watch</option>
                   <option>Movie Night</option>
                   <option>Short Trip</option>
                   <option>Home Party</option>
-                  <option>Beach Party</option>
                   <option>Other</option>
                 </select>
               </div>
@@ -745,105 +747,7 @@ const AboutUs = () => {
   );
 };
 
-const GenZSection = () => {
-  const genZServices = [
-    {
-      title: "Movie Night",
-      description: "Private screenings with gourmet popcorn, cozy seating, and premium sound systems.",
-      icon: <Ticket className="w-6 h-6" />,
-      image: "https://png.pngtree.com/png-vector/20250513/ourmid/pngtree-movie-night-essentials-such-as-clapperboard-popcorn-and-tickets-png-image_16245533.png"
-    },
-    {
-      title: "Pool Party",
-      description: "Sun, music, and refreshing vibes with custom floaties and poolside mocktails.",
-      icon: <Waves className="w-6 h-6" />,
-      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/19/99/26/4b/the-original-pool-party.jpg?w=1200&h=-1&s=1"
-    },
-    {
-      title: "Short Trip",
-      description: "Curated weekend getaways and road trips to the most Instagrammable spots.",
-      icon: <Plane className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-      title: "Home Party",
-      description: "Intimate house gatherings with professional decor, catering, and entertainment.",
-      icon: <Home className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-      title: "Beach Party",
-      description: "Bonfires, music, and the ocean breeze for an unforgettable coastal celebration.",
-      icon: <Palmtree className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-      title: "Gaming Zone",
-      description: "High-stakes e-sports setups with professional equipment and live streaming.",
-      icon: <Gamepad2 className="w-6 h-6" />,
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-      title: "Night Out",
-      description: "Experience the ultimate nightlife with curated clubbing, late-night dining, and VIP experiences.",
-      icon: <Moon className="w-6 h-6" />,
-      image: "https://media.ur.life/uploads/Night_Out_1440_x_810.jpg"
-    }
-  ];
-
-  return (
-    <div className="pt-20 bg-slate-50 min-h-screen">
-      <section className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-600 text-white text-sm font-bold uppercase tracking-widest mb-6 shadow-lg shadow-teal-600/20"
-            >
-              <Sparkles className="w-4 h-4" />
-              Gen-Z Edition
-            </motion.div>
-            <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-6">The Gen-Z Vibe</h2>
-            <p className="text-slate-600 max-w-2xl mx-auto text-lg">Curated experiences for the next generation. Aesthetic, energetic, and absolutely unforgettable.</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {genZServices.map((service, idx) => (
-              <motion.div 
-                key={service.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="group relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 transition-all hover:shadow-2xl"
-              >
-                <div className="aspect-square overflow-hidden">
-                  <img 
-                    src={service.image} 
-                    alt={service.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-                <div className="p-8 relative">
-                  <div className="w-14 h-14 bg-teal-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-teal-600/20 -mt-16 relative z-10 border-4 border-white">
-                    {service.icon}
-                  </div>
-                  <h3 className="text-2xl font-serif font-bold text-slate-900 mb-3">{service.title}</h3>
-                  <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-const Footer = ({ onAboutClick, onHomeClick, onGenZClick }: { onAboutClick: () => void, onHomeClick: () => void, onGenZClick: () => void }) => {
+const Footer = ({ onAboutClick, onHomeClick }: { onAboutClick: () => void, onHomeClick: () => void }) => {
   return (
     <footer className="bg-white pt-24 pb-12 px-6 border-t border-slate-100">
       <div className="max-w-7xl mx-auto">
@@ -876,7 +780,6 @@ const Footer = ({ onAboutClick, onHomeClick, onGenZClick }: { onAboutClick: () =
             <h4 className="font-bold text-slate-900 mb-6">Quick Links</h4>
             <ul className="space-y-4">
               <li><button onClick={onAboutClick} className="text-slate-500 hover:text-teal-600 transition-colors">About Us</button></li>
-              <li><button onClick={onGenZClick} className="text-slate-500 hover:text-teal-600 transition-colors">Gen-Z Vibe</button></li>
               <li><a href="#services" className="text-slate-500 hover:text-teal-600 transition-colors">Services</a></li>
               <li><a href="#testimonials" className="text-slate-500 hover:text-teal-600 transition-colors">Testimonials</a></li>
             </ul>
@@ -888,7 +791,6 @@ const Footer = ({ onAboutClick, onHomeClick, onGenZClick }: { onAboutClick: () =
               <li><a href="#" className="text-slate-500 hover:text-teal-600 transition-colors">Wedding Planning</a></li>
               <li><a href="#" className="text-slate-500 hover:text-teal-600 transition-colors">Corporate Events</a></li>
               <li><a href="#" className="text-slate-500 hover:text-teal-600 transition-colors">Private Parties</a></li>
-              <li><button onClick={onGenZClick} className="text-slate-500 hover:text-teal-600 transition-colors">Gen-Z Vibes</button></li>
             </ul>
           </div>
 
@@ -918,7 +820,7 @@ const Footer = ({ onAboutClick, onHomeClick, onGenZClick }: { onAboutClick: () =
 // --- Main App ---
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'about' | 'gen-z'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'about'>('home');
 
   const handleHomeClick = () => {
     setCurrentPage('home');
@@ -927,11 +829,6 @@ export default function App() {
 
   const handleAboutClick = () => {
     setCurrentPage('about');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleGenZClick = () => {
-    setCurrentPage('gen-z');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -946,7 +843,6 @@ export default function App() {
         onBookClick={handleBookClick} 
         onAboutClick={handleAboutClick}
         onHomeClick={handleHomeClick}
-        onGenZClick={handleGenZClick}
       />
       
       {currentPage === 'booking' && (
@@ -962,10 +858,6 @@ export default function App() {
         <AboutUs />
       )}
 
-      {currentPage === 'gen-z' && (
-        <GenZSection />
-      )}
-
       {currentPage === 'home' && (
         <>
           <Hero onBookClick={handleBookClick} />
@@ -977,7 +869,6 @@ export default function App() {
       <Footer 
         onAboutClick={handleAboutClick}
         onHomeClick={handleHomeClick}
-        onGenZClick={handleGenZClick}
       />
     </div>
   );
