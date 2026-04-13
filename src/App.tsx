@@ -29,7 +29,9 @@ import {
   Waves,
   Home,
   Plane,
-  Moon
+  Moon,
+  Calculator,
+  IndianRupee
 } from 'lucide-react';
 import { cn } from './lib/utils';
 
@@ -46,9 +48,9 @@ const Navbar = ({ onBookClick, onAboutClick, onHomeClick }: { onBookClick: () =>
   }, []);
 
   const navLinks = [
-    { name: 'About Us', onClick: onAboutClick },
     { name: 'Services', href: '#services' },
     { name: 'Testimonials', href: '#testimonials' },
+    { name: 'Contact Us', href: '#contact' },
   ];
 
   return (
@@ -239,7 +241,7 @@ const Hero = ({ onBookClick }: { onBookClick: () => void }) => {
   );
 };
 
-const Services = () => {
+const Services = ({ onEstimateClick }: { onEstimateClick: (service: string) => void }) => {
   const services = [
     {
       title: "Weddings",
@@ -328,7 +330,14 @@ const Services = () => {
                   {service.icon}
                 </div>
                 <h3 className="text-2xl font-serif font-bold text-slate-900 mb-3">{service.title}</h3>
-                <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
+                <p className="text-slate-600 mb-8 leading-relaxed">{service.description}</p>
+                <button 
+                  onClick={() => onEstimateClick(service.title)}
+                  className="w-full py-3 rounded-xl border-2 border-teal-600 text-teal-600 font-bold hover:bg-teal-600 hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
+                >
+                  <Calculator className="w-4 h-4 group-hover/btn:rotate-12 transition-transform" />
+                  Estimate Budget
+                </button>
               </div>
             </motion.div>
           ))}
@@ -747,9 +756,134 @@ const AboutUs = () => {
   );
 };
 
+const BudgetPage = ({ onCancel, initialService }: { onCancel: () => void, initialService?: string }) => {
+  const [service, setService] = useState(initialService || "Weddings");
+  const [guests, setGuests] = useState(100);
+  const [tier, setTier] = useState("Standard");
+  
+  const baseRates: Record<string, number> = {
+    "Weddings": 500000,
+    "Corporate Events": 200000,
+    "Private Parties": 50000,
+    "Pool Party": 75000,
+    "Movie Night": 30000,
+    "Sports Watch": 40000,
+    "Night Out": 100000,
+    "Short Trip": 150000,
+    "Home Party": 25000
+  };
+
+  const perGuestRates: Record<string, number> = {
+    "Economy": 500,
+    "Standard": 1200,
+    "Premium": 3000
+  };
+
+  const estimate = (baseRates[service] || 50000) + (guests * perGuestRates[tier as keyof typeof perGuestRates]);
+
+  return (
+    <div className="pt-24 pb-12 px-6 bg-slate-50 min-h-screen">
+      <div className="max-w-4xl mx-auto">
+        <button onClick={onCancel} className="mb-8 flex items-center gap-2 text-slate-600 hover:text-teal-600 transition-colors font-bold">
+          <ArrowRight className="w-4 h-4 rotate-180" /> Back to Home
+        </button>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100"
+        >
+          <div className="grid md:grid-cols-2">
+            <div className="p-8 md:p-12 border-r border-slate-100">
+              <h2 className="text-3xl font-serif font-bold text-slate-900 mb-8">Budget Estimator</h2>
+              
+              <div className="space-y-8">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Select Service</label>
+                  <select 
+                    value={service}
+                    onChange={(e) => setService(e.target.value)}
+                    className="w-full px-4 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-teal-500/20 transition-all appearance-none font-medium"
+                  >
+                    {Object.keys(baseRates).map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Number of Guests</label>
+                    <span className="text-teal-600 font-bold text-lg">{guests}</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="2000" 
+                    step="10"
+                    value={guests}
+                    onChange={(e) => setGuests(parseInt(e.target.value))}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
+                  />
+                  <div className="flex justify-between mt-2 text-[10px] text-slate-400 font-bold uppercase">
+                    <span>10</span>
+                    <span>2000</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Service Tier</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {["Economy", "Standard", "Premium"].map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setTier(t)}
+                        className={cn(
+                          "py-4 rounded-2xl text-xs font-bold transition-all border uppercase tracking-widest",
+                          tier === t 
+                            ? "bg-teal-600 text-white border-teal-600 shadow-lg shadow-teal-600/20" 
+                            : "bg-white text-slate-600 border-slate-200 hover:border-teal-600"
+                        )}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 md:p-12 bg-slate-900 text-white flex flex-col justify-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -mr-32 -mt-32" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -ml-32 -mb-32" />
+              
+              <div className="text-center relative z-10">
+                <div className="w-20 h-20 bg-teal-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-teal-500/40 rotate-3">
+                  <Calculator className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-sm font-bold mb-2 text-teal-400 uppercase tracking-[0.2em]">Estimated Budget</h3>
+                <div className="text-5xl md:text-6xl font-bold mb-6 flex items-center justify-center gap-1">
+                  <span className="text-teal-500 text-3xl">₹</span>
+                  {estimate.toLocaleString('en-IN')}
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/10">
+                  <p className="text-slate-400 text-xs leading-relaxed italic">
+                    "This is a rough estimate based on current market rates in Uttar Pradesh. Final pricing may vary based on specific customizations and venue selections."
+                  </p>
+                </div>
+                <button className="w-full bg-teal-500 text-white py-5 rounded-2xl font-bold hover:bg-teal-400 transition-all shadow-xl shadow-teal-500/20 uppercase tracking-widest text-sm">
+                  Get Detailed Quote
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
 const Footer = ({ onAboutClick, onHomeClick }: { onAboutClick: () => void, onHomeClick: () => void }) => {
   return (
-    <footer className="bg-white pt-24 pb-12 px-6 border-t border-slate-100">
+    <footer id="contact" className="bg-white pt-24 pb-12 px-6 border-t border-slate-100">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
@@ -820,7 +954,8 @@ const Footer = ({ onAboutClick, onHomeClick }: { onAboutClick: () => void, onHom
 // --- Main App ---
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'about'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'booking' | 'about' | 'budget'>('home');
+  const [selectedService, setSelectedService] = useState<string | undefined>();
 
   const handleHomeClick = () => {
     setCurrentPage('home');
@@ -834,6 +969,12 @@ export default function App() {
 
   const handleBookClick = () => {
     setCurrentPage('booking');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleEstimateClick = (service: string) => {
+    setSelectedService(service);
+    setCurrentPage('budget');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -858,10 +999,17 @@ export default function App() {
         <AboutUs />
       )}
 
+      {currentPage === 'budget' && (
+        <BudgetPage 
+          onCancel={() => setCurrentPage('home')} 
+          initialService={selectedService}
+        />
+      )}
+
       {currentPage === 'home' && (
         <>
           <Hero onBookClick={handleBookClick} />
-          <Services />
+          <Services onEstimateClick={handleEstimateClick} />
           <Testimonials />
         </>
       )}
