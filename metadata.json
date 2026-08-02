@@ -1,5 +1,6 @@
 {
-  "name": "EventSathi - Premium Event Planning",
-  "description": "A high-end event management platform for weddings, corporate events, and celebrations.",
-  "requestFramePermissions": []
+  "name": "EventSaathi - One Platform, Every Celebration",
+  "description": "Discover, customize, and book venues, packages, and celebration experiences in one place.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
